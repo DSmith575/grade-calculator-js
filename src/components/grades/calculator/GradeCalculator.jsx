@@ -3,6 +3,7 @@ import GradeForm from '../forms/GradeForm';
 import { weightPercentage, weightedGrades, gradeRounding } from '../../../utils/gradeCalculations';
 import useCourseGrades from '../../../hooks/useCourseGrades';
 import Dropdown from '../../dropdown/Dropdown';
+import OverAllGrade from '../forms/grading/OverAllGrade';
 
 const courses = [
   'Maths for IT',
@@ -63,28 +64,27 @@ const GradeCalculator = () => {
 
   return (
     <>
-      <div className="">
-        <Dropdown courseList={courses} value={selectedCourse} onChange={handleDropDown} />
-        <GradeForm
-          handleSubmit={handleSubmit}
-          grades={grades}
-          gradeHeader={'Results'}
-          weightsHeader={'Weights%'}
-          weights={weights}
-          buttonText={'Submit'}
-          onGradeChange={handleGradeChange}
-          onWeightChange={handleWeightChange}
-        />
-        <div className="">
-          {overAllGrade.total && (
-            <div>
-              <p>Total: {overAllGrade.total}</p>
-              <p>Rounded: {overAllGrade.rounded}</p>
-            </div>
-          )}
-          {error && <p>{error}</p>}
+      <section className="mx-4 my-4">
+        <div className="mx-4">
+          <Dropdown courseList={courses} value={selectedCourse} onChange={handleDropDown} />
         </div>
-      </div>
+        <div className="">
+          <GradeForm
+            handleSubmit={handleSubmit}
+            grades={grades}
+            gradeHeader={'Results'}
+            weightHeader={'Weights%'}
+            weights={weights}
+            buttonText={'Submit'}
+            onGradeChange={handleGradeChange}
+            onWeightChange={handleWeightChange}
+          />
+        </div>
+        <div className="rounded border px-4 py-2 mx-4 mt-2 text-sm font-medium text-gray-800 text-center">
+          {error && <p className="text-red-400">{error}</p>}
+          {overAllGrade.total && <OverAllGrade overAllTotal={overAllGrade.total} overAllRounded={overAllGrade.rounded} />}
+        </div>
+      </section>
     </>
   );
 };

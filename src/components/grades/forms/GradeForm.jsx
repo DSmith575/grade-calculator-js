@@ -13,14 +13,16 @@ const GradeForm = ({ gradeHeader, weightHeader, handleSubmit, grades, weights, b
 
   return (
     <>
-      <div>
-        <form className={''} onSubmit={handleSubmitForm}>
+      <form className={''} onSubmit={handleSubmitForm}>
+        <div className="flex justify-evenly border rounded mx-4">
           <FormFields header={gradeHeader} fields={grades} step={0.01} handleChange={onGradeChange} />
 
           <FormFields header={weightHeader} fields={weights} handleChange={onWeightChange} />
+        </div>
+        <div className="flex justify-center pt-2">
           <Button type="submit" text={buttonText} />
-        </form>
-      </div>
+        </div>
+      </form>
     </>
   );
 };

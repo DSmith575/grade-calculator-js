@@ -4,7 +4,6 @@ const useCourseGrades = () => {
   const [courseData, setCourseData] = useState({});
 
   const setData = (courseName, type, data) => {
-    console.log(courseData);
     setCourseData((prevData) => ({
       ...prevData,
       [courseName]: {
