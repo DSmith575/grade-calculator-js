@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import GradeForm from '../forms/GradeForm';
 import { weightPercentage, weightedGrades, gradeRounding } from '../../../utils/gradeCalculations';
 import useCourseGrades from '../../../hooks/useCourseGrades';
+import Dropdown from '../../dropdown/Dropdown';
 
 const courses = [
   'Maths for IT',
@@ -12,19 +13,19 @@ const courses = [
   'Intro to Networks',
 ];
 
-import Dropdown from '../../dropdown/Dropdown';
-
 const GradeCalculator = () => {
-  const { getGrades, getWeights, setCourseGrades, setCourseWeights } = useCourseGrades(courses);
+  const { getData, setData } = useCourseGrades();
   const [selectedCourse, setSelectedCourse] = useState(courses[0]);
-  const [overAllGrade, setOverallGrade] = useState('');
+  const [overAllGrade, setOverallGrade] = useState({
+    total: '',
+    rounded: '',
+  });
   const [error, setError] = useState('');
 
-  const grades = getGrades(selectedCourse);
-  const weights = getWeights(selectedCourse);
+  const grades = getData('grades', selectedCourse);
+  const weights = getData('weights', selectedCourse);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     setError('');
 
     const weightedGradeSum = weightedGrades(grades, weights);
@@ -34,32 +35,56 @@ const GradeCalculator = () => {
 
     if (totalWeightPercentage > 100) return setError('Weight total must not exceed 100%');
 
-    setOverallGrade(`${gradeRounding(weightedGradeSum).toString()}%`);
+    const totalGrade = `${weightedGradeSum.toFixed(2).toString()}%`;
+    const roundedTotalGrade = `${gradeRounding(weightedGradeSum).toString()}%`;
+
+    setOverallGrade({
+      total: totalGrade,
+      rounded: roundedTotalGrade,
+    });
   };
 
   const handleDropDown = (event) => {
     const selected = courses.find((course) => course === event.target.value);
     setSelectedCourse(selected);
+    setError('');
+    setOverallGrade('');
   };
 
   const handleChange = (type, index, event) => {
-    if (isNaN(parseFloat(event.target.value))) return (event.target.value = 0);
-    const updatedArray = type === 'grades' ? [...grades] : [...weights];
+    if (isNaN(parseFloat(event.target.value))) return;
+    const updatedArray = [...getData(type, selectedCourse)];
     updatedArray[index] = parseFloat(event.target.value);
-    (type === 'grades' ? setCourseGrades : setCourseWeights)(selectedCourse, updatedArray);
+    setData(selectedCourse, type, updatedArray);
   };
+
+  const handleGradeChange = useCallback((index, event) => handleChange('grades', index, event), [handleChange]);
+  const handleWeightChange = useCallback((index, event) => handleChange('weights', index, event), [handleChange]);
 
   return (
     <>
-      <Dropdown headerTitle={'Select Course'} courseList={courses} value={selectedCourse} onChange={handleDropDown} />
-      <GradeForm
-        handleSubmit={handleSubmit}
-        grades={grades}
-        weights={weights}
-        buttonText={'Submit'}
-        handleChange={handleChange}
-      />
-      {error ? <p>{error}</p> : <p>{overAllGrade}</p>}
+      <div className="">
+        <Dropdown courseList={courses} value={selectedCourse} onChange={handleDropDown} />
+        <GradeForm
+          handleSubmit={handleSubmit}
+          grades={grades}
+          gradeHeader={'Results'}
+          weightsHeader={'Weights%'}
+          weights={weights}
+          buttonText={'Submit'}
+          onGradeChange={handleGradeChange}
+          onWeightChange={handleWeightChange}
+        />
+        <div className="">
+          {overAllGrade.total && (
+            <div>
+              <p>Total: {overAllGrade.total}</p>
+              <p>Rounded: {overAllGrade.rounded}</p>
+            </div>
+          )}
+          {error && <p>{error}</p>}
+        </div>
+      </div>
     </>
   );
 };

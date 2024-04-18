@@ -1,36 +1,26 @@
 import { useState, useMemo } from 'react';
 
 const useCourseGrades = () => {
-  const [gradeData, setGradeData] = useState({});
-  const [weightData, setWeightData] = useState({});
+  const [courseData, setCourseData] = useState({});
 
-  const setCourseGrades = (courseName, grades) => {
-    setGradeData((prevData) => ({
+  const setData = (courseName, type, data) => {
+    console.log(courseData);
+    setCourseData((prevData) => ({
       ...prevData,
-      [courseName]: grades,
+      [courseName]: {
+        ...prevData[courseName],
+        [type]: data,
+      },
     }));
   };
 
-  const setCourseWeights = (courseName, weights) => {
-    setWeightData((prevData) => ({
-      ...prevData,
-      [courseName]: weights,
-    }));
-  };
-
-  const getGrades = useMemo(() => {
-    return (courseName) => {
-      return gradeData[courseName] || [0, 0, 0, 0];
+  const getData = useMemo(() => {
+    return (type, courseName) => {
+      return courseData[courseName]?.[type] || [0, 0, 0, 0];
     };
-  });
+  }, [courseData]);
 
-  const getWeights = useMemo(() => {
-    return (courseName) => {
-      return weightData[courseName] || [0, 0, 0, 0];
-    };
-  });
-
-  return { getGrades, getWeights, setCourseGrades, setCourseWeights };
+  return { getData, setData };
 };
 
 export default useCourseGrades;
