@@ -64,7 +64,7 @@ const GradeCalculator = () => {
 
   return (
     <>
-      <section className="mx-4 my-4">
+      <section className="mx-4 my-4 sm:w-[50%]">
         <div className="mx-4">
           <Dropdown courseList={courses} value={selectedCourse} onChange={handleDropDown} />
         </div>
@@ -80,8 +80,8 @@ const GradeCalculator = () => {
             onWeightChange={handleWeightChange}
           />
         </div>
-        <div className="rounded border px-4 py-2 mx-4 mt-2 text-sm font-medium text-gray-800 text-center">
-          {error && <p className="text-red-400">{error}</p>}
+        <div className="">
+          {error && <p className="text-red-400 text-center">{error}</p>}
           {overAllGrade.total && <OverAllGrade overAllTotal={overAllGrade.total} overAllRounded={overAllGrade.rounded} />}
         </div>
       </section>
